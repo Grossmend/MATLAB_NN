@@ -15,6 +15,8 @@ trainData(trainData(:,1) == 0,1) = 10;
 
 tic
 
+% параметры нейронной сети
+
 % кол-во входных параметров
 inodes = 784;
 % кол-во скрытых узлов 1-ого сло€
@@ -25,9 +27,9 @@ onodes = 10;
 lr = 0.3;
 
 % сигма дл€ начальных весовых коэф. между входным и скрытым
-sigmIn = (hnodes^(-0.75));
+sigmIn = (hnodes^(-0.5));
 % сигма дл€ начальных весовых коэф. между скрытым и выходным
-sigmOut = (onodes^(-0.75));
+sigmOut = (onodes^(-0.5));
 
 % начальна€ матрица весов между входными параметрами и скрытым слоем (по √ауссу)
 wih = sigmIn.*randn(hnodes, inodes);
@@ -56,35 +58,29 @@ end
 disp(['Ёффективность сети равна: ', num2str(sum(ans_arr)/length(ans_arr))])
 
 toc
-% %% тестировка нейронной сети дл€ одного параметра входного
-% 
-% tic
-% 
-% % тестируем нейронную сеть
-% inputsTest = imread('E:\Yuriy\MatLab\NBP_algorithm\MatLab\MyNeural\test.png');
-% 
-% testImg = inputsTest(:,:,1);
-% testImg = 255.0 - testImg;
-% testImg = im2double(testImg);
-% % отображаем на грфике
-% imshow(reshape(testImg, 28,28));
-% % поворачиваем вокруг, дл€ корректного распозновани€, как в обучении
-% testImg = rot90(fliplr(testImg),1);
-% % преобразовываем в вектор
-% testImg = reshape(testImg, 1, 28*28)';
-% 
-% ansNeural = questNeural(testImg, wih, who) %#ok
-% [~, ansBest] = max(ansNeural); 
-% 
-% disp([num2str(max(ansNeural)*100), ' - процентов веро€тности того что: ', num2str(ansBest)])
-% 
-% toc
-% 
-% %% заносим один вариант из выборки
-% 
-% imgCh = trainData(25,2:end);
-% % imgCh = reshape(testImg, 1, 28*28)';
-% % imgCh = rot90(imgCh,-1)';
-% imshow(reshape(imgCh,28,28));
+%% тестировка нейронной сети дл€ одного параметра входного
 
+tic
 
+% тестируем нейронную сеть
+inputsTest = imread('C:\Users\market8\Desktop\GitHub\MATLAB_NN\MNIST_perceptron\files\test.png');
+
+testImg = inputsTest(:,:,1);
+testImg = 255.0 - testImg;
+testImg = im2double(testImg);
+
+% отображаем на грфике
+imshow(reshape(testImg, 28,28));
+
+% поворачиваем вокруг, дл€ корректного распозновани€, как в обучении
+testImg = rot90(fliplr(testImg),1);
+
+% преобразовываем в вектор
+testImg = reshape(testImg, 1, 28*28)';
+
+ansNeural = questNeural(testImg, wih, who) %#ok
+[~, ansBest] = max(ansNeural); 
+
+disp([num2str(max(ansNeural)*100), ' - процентов веро€тности того что: ', num2str(ansBest)])
+
+toc
