@@ -1,0 +1,2 @@
+# folder ignore input files, csv, mat etc.
+MNIST_perceptron/files/
