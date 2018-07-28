@@ -1,30 +1,35 @@
 
-% загружаем файлы данных с набором цифр (тренировочный файл)
-testFile = 'C:\Users\market8\Desktop\GitHub\MATLAB_NN\MNIST_perceptron\files\mnist_test.csv';
-testData = csvread(testFile);
-% преобразовываем 0 - в цифру 10
-testData(testData(:,1) == 0,1) = 10;
+%% загружаем данные
 
-% загружаем файлы данных с набором цифр (тестовый файл)
-trainFile = 'C:\Users\market8\Desktop\GitHub\MATLAB_NN\MNIST_perceptron\files\mnist_train.csv';
-trainData = csvread(trainFile);
-% преобразовываем 0 - в цифру 10
-trainData(trainData(:,1) == 0,1) = 10;
+% you can download this file from https://yadi.sk/d/-oLo6E7Y3ZfJJj
+data = get_data_mnist('C:\Users\Grossmend\Desktop\repositories\_data\MATLAB\mnist\mnist_data.csv');
+
+%% разбиваем выборку на тестовую и тренировочную
+
+trainPercent = 0.7;
+
+[trainData, ...
+ trainTarget, ...
+ testData, ...
+ testTarget] = split_mnist_data(data, trainPercent);
+
+%% параметры нейронной сети
+
+% кол-во входных параметров
+inodes = size(trainData,2);
+
+% кол-во скрытых узлов 1-ого сло€
+hnodes = 150;
+
+% кол-во выходных параметров
+onodes = 10;
+
+% коэф. скорости обучени€ 
+lr = 0.3;
 
 %% главный алгоритм
 
 tic
-
-% параметры нейронной сети
-
-% кол-во входных параметров
-inodes = 784;
-% кол-во скрытых узлов 1-ого сло€
-hnodes = 150;
-% кол-во выходных параметров
-onodes = 10;
-% коэфю скорости обучени€ 
-lr = 0.3;
 
 % сигма дл€ начальных весовых коэф. между входным и скрытым
 sigmIn = (hnodes^(-0.5));
@@ -39,18 +44,18 @@ who = sigmOut.*randn(onodes, hnodes);
 % обучаем нейронную сеть
 for i = 1:size(trainData,1)
     aim = ones(onodes,1)*0.01;
-    aim(trainData(i,1)) = 0.99;
-    inputs = ((trainData(i,2:end)/255 * 0.99) + 0.01)';
+    aim(trainTarget(i,1)) = 0.99;
+    inputs = ((trainData(i,:)/255 * 0.99) + 0.01)';
     [wih, who] = trainNeural(inputs, aim, wih, who, lr);
 end
 
 % тестируем нейронную сеть
 ans_arr = zeros(size(testData,1),1);
 for i = 1:size(testData,1)
-    inputsTest = testData(i,2:end)';
+    inputsTest = testData(i,:)';
     ansNeural = questNeural(inputsTest, wih, who);
     [~,ansMaxInd] = max(ansNeural);
-    if testData(i,1) == ansMaxInd
+    if testTarget(i,1) == ansMaxInd
         ans_arr(i) = 1;
     end
 end
@@ -58,29 +63,29 @@ end
 disp(['Ёффективность сети равна: ', num2str(sum(ans_arr)/length(ans_arr))])
 
 toc
-%% тестировка нейронной сети дл€ одного параметра входного
-
-tic
-
-% тестируем нейронную сеть
-inputsTest = imread('C:\Users\market8\Desktop\GitHub\MATLAB_NN\MNIST_perceptron\files\test.png');
-
-testImg = inputsTest(:,:,1);
-testImg = 255.0 - testImg;
-testImg = im2double(testImg);
-
-% отображаем на грфике
-imshow(reshape(testImg, 28,28));
-
-% поворачиваем вокруг, дл€ корректного распозновани€, как в обучении
-testImg = rot90(fliplr(testImg),1);
-
-% преобразовываем в вектор
-testImg = reshape(testImg, 1, 28*28)';
-
-ansNeural = questNeural(testImg, wih, who) %#ok
-[~, ansBest] = max(ansNeural); 
-
-disp([num2str(max(ansNeural)*100), ' - процентов веро€тности того что: ', num2str(ansBest)])
+% %% тестировка нейронной сети дл€ одного параметра входного
+% 
+% tic
+% 
+% % тестируем нейронную сеть
+% inputsTest = imread('C:\Users\market8\Desktop\GitHub\MATLAB_NN\MNIST_perceptron\files\test.png');
+% 
+% testImg = inputsTest(:,:,1);
+% testImg = 255.0 - testImg;
+% testImg = im2double(testImg);
+% 
+% % отображаем на грфике
+% imshow(reshape(testImg, 28,28));
+% 
+% % поворачиваем вокруг, дл€ корректного распозновани€, как в обучении
+% testImg = rot90(fliplr(testImg),1);
+% 
+% % преобразовываем в вектор
+% testImg = reshape(testImg, 1, 28*28)';
+% 
+% ansNeural = questNeural(testImg, wih, who) %#ok
+% [~, ansBest] = max(ansNeural); 
+% 
+% disp([num2str(max(ansNeural)*100), ' - процентов веро€тности того что: ', num2str(ansBest)])
 
 toc
