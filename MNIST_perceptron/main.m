@@ -72,25 +72,24 @@ toc
 
 tic
 
-figure
 % тестируем нейронную сеть
-inputsTest = imread('C:\Users\Grossmend\Desktop\rep\_data\MATLAB\mnist\test.png');
-
-testImg = inputsTest(:,:,1);
+png = imread('C:\Users\Grossmend\Desktop\rep\_data\MATLAB\mnist\test.png');
+testImg = png(:,:,1);
 testImg = 255.0 - testImg;
 
 % отображаем на грфике
 imshow(reshape(testImg, 28,28));
 
-testImg = flip(testImg, 2);
-testImg = rot90(testImg,1);
+% приводим картинку к вектору обучающих данных
+testImg = reshape(rot90(flip(testImg, 2),1), 1, 28*28)';
 
-% преобразовываем в вектор
-testImg = reshape(testImg, 1, 28*28)';
+% опрашиваем сеть
+ansNeural = questNeural(double(testImg), wih, who);
 
-ansNeural = questNeural(double(testImg), wih, who) %#ok
+% ищем максимальный результат
 [~, ansBest] = max(ansNeural); 
 
+% выводим результат
 disp([num2str(max(ansNeural)*100), ' - процентов вероятности того что: ', num2str(ansBest)])
 
 toc
